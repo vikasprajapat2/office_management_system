@@ -1,0 +1,52 @@
+<!-- templates/update_employee.html -->
+{% extends "base_dashboard.html" %}
+{% set title = "Update Employee" %}
+
+{% block dashboard_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-white">
+                <h5>Update {{ employee.full_name }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" class="form-control" name="full_name" value="{{ employee.full_name }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Designation</label>
+                                <input type="text" class="form-control" name="designation" value="{{ employee.designation }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Department</label>
+                                <input type="text" class="form-control" name="department" value="{{ employee.department }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Salary</label>
+                                <input type="number" class="form-control" name="salary" value="{{ employee.salary }}" step="1000">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Manager Comments</label>
+                        <textarea class="form-control" name="comment" rows="3">{{ employee.comment }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning btn-block btn-lg">Update Employee</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

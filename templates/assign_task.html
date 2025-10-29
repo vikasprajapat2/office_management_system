@@ -1,0 +1,52 @@
+<!-- templates/assign_task.html -->
+{% extends "base_dashboard.html" %}
+{% set title = "Assign Task" %}
+
+{% block dashboard_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5 class="m-0">Assign New Task to {{ employee.full_name }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="form-group">
+                        <label>Task Title <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" name="description" rows="4" placeholder="Detailed instructions..."></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Due Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="due_date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Priority</label>
+                                <select class="form-control" name="priority">
+                                    <option>Normal</option>
+                                    <option>High</option>
+                                    <option>Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success btn-block btn-lg">
+                                <i class="fas fa-plus mr-2"></i>Assign Task
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

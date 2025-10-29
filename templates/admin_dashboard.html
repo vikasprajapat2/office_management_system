@@ -1,75 +1,40 @@
-<!-- templates/admin_dashboard.html - Animated admin view -->
-{% extends 'base.html' %}
-{% block title %}Admin Dashboard{% endblock %}
-{% block content %}
-    <div class="text-center mb-5">
-        <h2><i class="fas fa-crown mr-2"></i>Admin Control Center</h2>
-        <p class="lead">Manage your empire with power and style!</p>
-    </div>
+{% extends "base_dashboard.html" %}
+{% set title = "Admin Dashboard" %}
+{% set active = "dashboard" %}
 
-    <div class="row">
-        <div class="col-md-3 col-animated">
-            <div class="card text-white" style="background: linear-gradient(45deg, #e056fd, #badc58);">
-                <div class="card-body text-center">
-                    <i class="fas fa-users fa-3x mb-3"></i>
-                    <h3>{{ employees|length }}</h3>
-                    <p>Total Employees</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 col-animated">
-            <div class="card text-white" style="background: linear-gradient(45deg, #ff6b6b, #feca57);">
-                <div class="card-body text-center">
-                    <i class="fas fa-user-tie fa-3x mb-3"></i>
-                    <h3>{{ supervisors|length }}</h3>
-                    <p>Supervisors</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 col-animated">
-            <div class="card text-white" style="background: linear-gradient(45deg, #74b9ff, #0984e3);">
-                <div class="card-body text-center">
-                    <i class="fas fa-calendar fa-3x mb-3"></i>
-                    <h3>{{ holiday_count }}</h3>
-                    <p>Holidays</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 col-animated">
-            <div class="card text-white" style="background: linear-gradient(45deg, #00cec9, #00b894);">
-                <div class="card-body text-center">
-                    <i class="fas fa-file-alt fa-3x mb-3"></i>
-                    <h3>{{ log_count }}</h3>
-                    <p>Total Logs</p>
-                </div>
-            </div>
-        </div>
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-1">Welcome, {{ current_user.full_name }}</h2>
+        <p class="text-muted">Here's what's happening with your team today.</p>
     </div>
+</div>
 
-    <div class="row mt-5">
-        <div class="col-md-3 col-animated">
-            <a href="{{ url_for('admin_users') }}" class="list-group-item list-group-item-action text-center">
-                <i class="fas fa-user-cog fa-2x mb-2"></i><br>
-                <strong>Manage Users</strong>
-            </a>
-        </div>
-        <div class="col-md-3 col-animated">
-            <a href="{{ url_for('admin_holidays') }}" class="list-group-item list-group-item-action text-center">
-                <i class="fas fa-calendar-plus fa-2x mb-2"></i><br>
-                <strong>Manage Holidays</strong>
-            </a>
-        </div>
-        <div class="col-md-3 col-animated">
-            <a href="{{ url_for('admin_attendance_dashboard') }}" class="list-group-item list-group-item-action text-center">
-                <i class="fas fa-chart-line fa-2x mb-2"></i><br>
-                <strong>Attendance Stats</strong>
-            </a>
-        </div>
-        <div class="col-md-3 col-animated">
-            <a href="{{ url_for('admin_logs') }}" class="list-group-item list-group-item-action text-center">
-                <i class="fas fa-history fa-2x mb-2"></i><br>
-                <strong>View Logs</strong>
-            </a>
+<div class="row mt-4">
+    {% from "partials/metric_card.html" import metric_card %}
+    {{ metric_card('Total Employees', employees|length, 'fa-users', 'primary', url_for('admin_users')) }}
+    {{ metric_card('On Leave Today', leaves_today, 'fa-calendar-times', 'warning', '#') }}
+    {{ metric_card('Total Departments', departments|length, 'fa-sitemap', 'success', '#') }}
+    {{ metric_card('Pending Approvals', pending_leaves, 'fa-clipboard-list', 'info', '#') }}
+</div>
+
+<div class="row mt-4">
+    {% macro small_card(t, v, i, l) %}
+    <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+        <div class="card shadow-sm text-center py-3">
+            <div class="card-body p-2">
+                <i class="fas {{ i }} fa-2x text-primary mb-2"></i>
+                <h5 class="mb-0">{{ v }}</h5>
+                <p class="text-muted mb-0">{{ t }}</p>
+                <a href="{{ l }}" class="small text-muted">View All</a>
+            </div>
         </div>
     </div>
+    {% endmacro %}
+
+    {{ small_card('Present Today', present_today, 'fa-user-check', '#') }}
+    {{ small_card('Total Announcements', 1, 'fa-bullhorn', '#') }}
+    {{ small_card('Approved Leave', approved_leaves_count, 'fa-check-circle', '#') }}
+    {{ small_card('Pending Payrolls', 1, 'fa-money-check-alt', '#') }}
+</div>
 {% endblock %}

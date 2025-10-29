@@ -7,6 +7,8 @@ from datetime import datetime, date, timedelta
 import os
 import logging
 from sqlalchemy import func, extract
+from datetime import date
+from sqlalchemy import func
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'  # Change to a secure random key
@@ -153,6 +155,21 @@ class Log(db.Model):
 
     user = db.relationship('User', backref='logs')
 
+# 1. Add Task Model
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    assigned_to = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    assigned_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status = db.Column(db.Enum('pending', 'in_progress', 'completed', 'overdue'), default='pending')
+    progress = db.Column(db.Integer, default=0)  # 0-100
+    due_date = db.Column(db.Date)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    assigned_user = db.relationship('User', foreign_keys=[assigned_to])
+    assigned_by_user = db.relationship('User', foreign_keys=[assigned_by])
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -166,6 +183,13 @@ def log_action(action):
         db.session.add(new_log)
         db.session.commit()
 
+# Context processor for common template variables
+@app.context_processor
+def inject_common_vars():
+    return {
+        'today': date.today().strftime('%B %d, %Y')
+    }
+
 # Routes
 @app.route('/')
 def index():
@@ -176,11 +200,25 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        print(f"\n=== LOGIN ATTEMPT ===")
+        print(f"Username: {username}")
+        print(f"Password: {password}")
+        
         user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            login_user(user)
-            log_action('Logged in')
-            return redirect(url_for('dashboard'))
+        print(f"User found: {user is not None}")
+        
+        if user:
+            print(f"User role: {user.role}")
+            password_check = user.check_password(password)
+            print(f"Password check result: {password_check}")
+            
+            if password_check:
+                login_user(user)
+                print(f"Login successful! Redirecting to dashboard...")
+                log_action('Logged in')
+                return redirect(url_for('dashboard'))
+        
+        print("Login failed - Invalid credentials")
         flash('Invalid credentials', 'danger')
         log_action(f'Failed login attempt for {username}')
     return render_template('login.html')
@@ -209,7 +247,25 @@ def employee_dashboard():
     if current_user.role != 'employee':
         flash('Access denied', 'danger')
         return redirect(url_for('dashboard'))
-    return render_template('employee_dashboard.html')
+    
+    today = date.today()
+    
+    # Check today's attendance
+    my_att_today = Attendance.query.filter_by(user_id=current_user.id, date=today).first()
+    today_attendance = 'Present' if my_att_today else 'Absent'
+    
+    # Pending leaves count
+    my_pending_leaves = Leave.query.filter_by(user_id=current_user.id, status='pending').count()
+    
+    # Salary slips count
+    salary_slips_count = SalarySlip.query.filter_by(user_id=current_user.id).count()
+    
+    log_action('Viewed employee dashboard')
+    
+    return render_template('employee_dashboard.html',
+                         today_attendance=today_attendance,
+                         my_pending_leaves=my_pending_leaves,
+                         salary_slips_count=salary_slips_count)
 
 @app.route('/employee/attendance', methods=['GET', 'POST'])
 @login_required
@@ -329,9 +385,63 @@ def supervisor_dashboard():
     if current_user.role != 'supervisor':
         flash('Access denied', 'danger')
         return redirect(url_for('dashboard'))
+    
     assigned = current_user.assigned_employees
+    today = date.today()
+    
+    # Get assigned employee IDs
+    assigned_ids = [e.id for e in assigned]
+    
+    # Calculate team statistics
+    pending_my_leaves = Leave.query.filter(
+        Leave.user_id.in_(assigned_ids),
+        Leave.status == 'pending'
+    ).count() if assigned_ids else 0
+    
+    team_attendance_today = Attendance.query.filter(
+        Attendance.user_id.in_(assigned_ids),
+        Attendance.date == today
+    ).count() if assigned_ids else 0
+    
+    team_overtime = db.session.query(func.sum(Attendance.overtime)).filter(
+        Attendance.user_id.in_(assigned_ids),
+        Attendance.date == today
+    ).scalar() or 0
+    
+    # Additional supervisor-specific reports
+    team_pending_leaves = Leave.query.filter(
+        Leave.user_id.in_(assigned_ids),
+        Leave.status == 'pending'
+    ).all() if assigned_ids else []
+    
+    team_approved_leaves = Leave.query.filter(
+        Leave.user_id.in_(assigned_ids),
+        Leave.status == 'approved'
+    ).count() if assigned_ids else 0
+    
+    team_absent_today = len(assigned) - team_attendance_today if assigned else 0
+    
+    avg_team_overtime = team_overtime / len(assigned) if assigned and team_overtime > 0 else 0
+    
+    # Mock team progress (can be replaced with real Goal model queries)
+    team_progress_avg = 0
+    
+    # Mock attendance data for chart (replace with actual query)
+    attendance_monthly = [5, 6, 8, 7, 9]
+    
     log_action('Viewed supervisor dashboard')
-    return render_template('supervisor_dashboard.html', assigned=assigned)
+    
+    return render_template('supervisor_dashboard.html', 
+                         assigned=assigned,
+                         pending_my_leaves=pending_my_leaves,
+                         team_attendance_today=team_attendance_today,
+                         team_overtime=team_overtime,
+                         team_pending_leaves=team_pending_leaves,
+                         team_approved_leaves=team_approved_leaves,
+                         team_absent_today=team_absent_today,
+                         avg_team_overtime=avg_team_overtime,
+                         team_progress_avg=team_progress_avg,
+                         attendance_monthly=attendance_monthly)
 
 @app.route('/supervisor/employee/<int:emp_id>/info')
 @login_required
@@ -408,13 +518,39 @@ def admin_dashboard():
     if current_user.role != 'admin':
         flash('Access denied', 'danger')
         return redirect(url_for('dashboard'))
+    
+    today = date.today()
+    
     employees = User.query.filter_by(role='employee').all()
     supervisors = User.query.filter_by(role='supervisor').all()
+    
+    # Calculate dashboard metrics
+    leaves_today = Leave.query.filter(
+        Leave.start_date <= today,
+        Leave.end_date >= today,
+        Leave.status == 'approved'
+    ).count()
+    
+    departments = {u.department for u in User.query.all() if u.department}
+    pending_leaves = Leave.query.filter_by(status='pending').count()
+    present_today = Attendance.query.filter_by(date=today).count()
+    approved_leaves_count = Leave.query.filter_by(status='approved').count()
+    
     holiday_count = Holiday.query.count()
     log_count = Log.query.count()
+    
     log_action('Viewed admin dashboard')
-    return render_template('admin_dashboard.html', employees=employees, supervisors=supervisors, 
-                          holiday_count=holiday_count, log_count=log_count)
+    
+    return render_template('admin_dashboard.html', 
+                         employees=employees,
+                         supervisors=supervisors,
+                         leaves_today=leaves_today,
+                         departments=departments,
+                         pending_leaves=pending_leaves,
+                         present_today=present_today,
+                         approved_leaves_count=approved_leaves_count,
+                         holiday_count=holiday_count,
+                         log_count=log_count)
 
 @app.route('/admin/holidays', methods=['GET', 'POST'])
 @login_required
@@ -575,6 +711,122 @@ def admin_attendance_dashboard():
     ).scalar() or 0
     log_action('Viewed attendance dashboard')
     return render_template('admin_attendance_dashboard.html', total_attendances=total_attendances, total_overtime=total_overtime, month=month, year=year)
+
+# Manager Team List View
+@app.route('/supervisor/team_list')
+@login_required
+def supervisor_team_list():
+    if current_user.role != 'supervisor':
+        return redirect(url_for('dashboard'))
+    
+    team = current_user.assigned_employees
+    # Get stats for each employee
+    team_stats = []
+    for emp in team:
+        stats = {
+            'employee': emp,
+            'today_attendance': Attendance.query.filter_by(user_id=emp.id, date=date.today()).first(),
+            'pending_leaves': Leave.query.filter_by(user_id=emp.id, status='pending').count(),
+            'tasks_pending': Task.query.filter_by(assigned_to=emp.id, status='pending').count(),
+            'tasks_overdue': Task.query.filter_by(assigned_to=emp.id, status__not_in=['completed'], due_date__lt=date.today()).count(),
+        }
+        team_stats.append(stats)
+    
+    return render_template('supervisor_team_list.html', team_stats=team_stats)
+
+# 4. Assign Task
+@app.route('/supervisor/assign_task/<int:emp_id>', methods=['GET', 'POST'])
+@login_required
+def assign_task(emp_id):
+    if current_user.role != 'supervisor':
+        return redirect(url_for('dashboard'))
+    
+    emp = User.query.get_or_404(emp_id)
+    if emp.manager_id != current_user.id:
+        flash('Access denied', 'danger')
+        return redirect(url_for('supervisor_team_list'))
+    
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        due_date = datetime.strptime(request.form['due_date'], '%Y-%m-%d').date()
+        
+        new_task = Task(
+            title=title,
+            description=description,
+            assigned_to=emp_id,
+            assigned_by=current_user.id,
+            due_date=due_date
+        )
+        db.session.add(new_task)
+        db.session.commit()
+        flash('Task assigned successfully!', 'success')
+        log_action(f'Assigned task "{title}" to {emp.full_name}')
+        return redirect(url_for('supervisor_employee_tasks', emp_id=emp_id))
+    
+    return render_template('assign_task.html', employee=emp)
+
+# 5. Employee Tasks View (Manager)
+@app.route('/supervisor/employee/<int:emp_id>/tasks')
+@login_required
+def supervisor_employee_tasks(emp_id):
+    if current_user.role != 'supervisor':
+        return redirect(url_for('dashboard'))
+    
+    emp = User.query.get_or_404(emp_id)
+    if emp.manager_id != current_user.id:
+        flash('Access denied', 'danger')
+        return redirect(url_for('supervisor_team_list'))
+    
+    tasks = Task.query.filter_by(assigned_to=emp_id).order_by(Task.due_date).all()
+    return render_template('employee_tasks.html', employee=emp, tasks=tasks)
+
+# 6. Update Task Progress/Status
+@app.route('/supervisor/task/<int:task_id>/update', methods=['POST'])
+@login_required
+def update_task(task_id):
+    if current_user.role != 'supervisor':
+        return redirect(url_for('dashboard'))
+    
+    task = Task.query.get_or_404(task_id)
+    if task.assigned_by != current_user.id:
+        flash('Access denied', 'danger')
+        return redirect(url_for('supervisor_team_list'))
+    
+    if 'status' in request.form:
+        task.status = request.form['status']
+    if 'progress' in request.form:
+        task.progress = int(request.form['progress'])
+    
+    db.session.commit()
+    flash('Task updated successfully!', 'success')
+    log_action(f'Updated task {task_id} status/progress')
+    return redirect(request.referrer or url_for('supervisor_team_list'))
+
+# 7. Employee Update (Manager can update profile)
+@app.route('/supervisor/employee/<int:emp_id>/update', methods=['GET', 'POST'])
+@login_required
+def supervisor_update_employee(emp_id):
+    if current_user.role != 'supervisor':
+        return redirect(url_for('dashboard'))
+    
+    emp = User.query.get_or_404(emp_id)
+    if emp.manager_id != current_user.id:
+        flash('Access denied', 'danger')
+        return redirect(url_for('supervisor_team_list'))
+    
+    if request.method == 'POST':
+        emp.full_name = request.form['full_name']
+        emp.designation = request.form['designation']
+        emp.department = request.form['department']
+        emp.salary = float(request.form['salary']) if request.form['salary'] else emp.salary
+        emp.comment = request.form['comment']
+        db.session.commit()
+        flash('Employee updated successfully!', 'success')
+        log_action(f'Updated employee {emp_id}')
+        return redirect(url_for('supervisor_team_list'))
+    
+    return render_template('update_employee.html', employee=emp)
 
 if __name__ == '__main__':
     with app.app_context():

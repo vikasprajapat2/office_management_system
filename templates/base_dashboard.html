@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex" id="wrapper">
+    <!-- SIDEBAR -->
+    <div class="bg-white border-right sidebar" id="sidebar-wrapper">
+        <div class="sidebar-heading text-center py-4">
+            <i class="fas fa-building mr-2"></i> Employee Management System
+        </div>
+        <div class="list-group list-group-flush">
+            <a href="{{ url_for('admin_dashboard') if current_user.role=='admin' else url_for('supervisor_dashboard') if current_user.role=='supervisor' else url_for('employee_dashboard') }}"
+               class="list-group-item list-group-item-action {% if active=='dashboard' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+            </a>
+
+            <!-- Employees (admin only) -->
+            {% if current_user.role == 'admin' %}
+            <a href="#" class="list-group-item list-group-item-action dropdown-toggle"
+               data-toggle="collapse" data-target="#empMenu">
+                <i class="fas fa-users mr-2"></i>Employees
+            </a>
+            <div class="collapse {% if active=='employees' %}show{% endif %}" id="empMenu">
+                <a href="{{ url_for('admin_users') }}" class="list-group-item pl-5">View Employees</a>
+                <a href="{{ url_for('admin_users') }}" class="list-group-item pl-5">Add Employee</a>
+            </div>
+            {% endif %}
+
+            <!-- Leave Management (all) -->
+            <a href="#" class="list-group-item list-group-item-action dropdown-toggle"
+               data-toggle="collapse" data-target="#leaveMenu">
+                <i class="fas fa-calendar-alt mr-2"></i>Leave Management
+            </a>
+            <div class="collapse" id="leaveMenu">
+                {% if current_user.role == 'employee' %}
+                <a href="{{ url_for('apply_leave') }}" class="list-group-item pl-5">Apply Leave</a>
+                {% endif %}
+                <a href="{{ url_for('admin_holidays') if current_user.role=='admin' else url_for('employee_holidays') }}" class="list-group-item pl-5">Holidays</a>
+            </div>
+
+            <!-- Payroll / Attendance / Announcements (stub) -->
+            <a href="#" class="list-group-item list-group-item-action"><i class="fas fa-dollar-sign mr-2"></i>Payroll</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="fas fa-clock mr-2"></i>Attendance</a>
+            <a href="#" class="list-group-item list-group-item-action"><i class="fas fa-bullhorn mr-2"></i>Announcements</a>
+        </div>
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <div id="page-content-wrapper">
+        <nav class="navbar navbar-expand navbar-light bg-white border-bottom">
+            <button class="btn btn-link btn-sm" id="menu-toggle"><i class="fas fa-bars"></i></button>
+            <div class="ml-auto d-flex align-items-center">
+                {% if current_user.role == 'admin' %}
+                <a href="{{ url_for('admin_users') }}" class="btn btn-success btn-sm mr-2">
+                    <i class="fas fa-plus mr-1"></i> Add New Employee
+                </a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm mr-2">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                </a>
+                <div class="badge badge-light ml-2"><i class="far fa-calendar-alt mr-1"></i> {{ today }}</div>
+                <img src="{{ current_user.profile_picture or url_for('static', filename='img/avatar.png') }}"
+                     class="rounded-circle ml-3" width="36" height="36" alt="Avatar">
+            </div>
+        </nav>
+
+        <div class="container-fluid py-4">
+            {% block dashboard_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $("#menu-toggle").click(function(e){ e.preventDefault(); $("#wrapper").toggleClass("toggled"); });
+</script>
+{% endblock %}

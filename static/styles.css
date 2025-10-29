@@ -377,3 +377,28 @@ h2 {
         padding: 0.4rem 0.6rem;
     }
 }
+
+/* ---------- SIDEBAR ---------- */
+.sidebar { width:260px; min-height:100vh; transition:all .3s; }
+#wrapper.toggled .sidebar { margin-left:-260px; }
+.sidebar .list-group-item.active { background:#ff8c00 !important; border-color:#ff8c00; color:#fff; }
+
+/* ---------- CARD COLORS ---------- */
+.border-left-primary { border-left:.25rem solid #4e73df !important; }
+.border-left-warning { border-left:.25rem solid #f6c23e !important; }
+.border-left-success { border-left:.25rem solid #1cc88a !important; }
+.border-left-info    { border-left:.25rem solid #36b9cc !important; }
+
+.card { border-radius:.75rem; }
+.btn-sm { border-radius:.35rem; }
+
+/* ---------- TOP BAR ---------- */
+#menu-toggle { color:#858796; }
+
+/* Add to static/styles.css - For Supervisor Dashboard Enhancements */
+.progress { height: 25px; border-radius: 12px; }
+.progress-bar { transition: width 0.6s ease; }
+.card { border-radius: 12px; }
+.card-header { border-radius: 12px 12px 0 0 !important; }
+.table th { border-top: none; }
+.btn-sm { border-radius: 20px; padding: 5px 12px; }

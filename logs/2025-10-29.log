@@ -95,3 +95,112 @@
 2025-10-29 12:34:28,917 - hr - Viewed supervisor dashboard
 2025-10-29 12:34:36,844 - hr - Viewed supervisor dashboard
 2025-10-29 12:34:43,634 - hr - Viewed supervisor dashboard
+2025-10-29 13:47:51,065 - admin - Logged in
+2025-10-29 13:47:51,165 - admin - Viewed admin dashboard
+2025-10-29 13:48:11,055 - admin - Viewed admin dashboard
+2025-10-29 13:48:17,399 - admin - Viewed admin dashboard
+2025-10-29 13:48:19,801 - admin - Viewed attendance dashboard
+2025-10-29 13:48:24,327 - admin - Viewed admin dashboard
+2025-10-29 13:48:26,744 - admin - Viewed logs
+2025-10-29 13:48:37,130 - admin - Logged out
+2025-10-29 13:48:48,331 - hr - Logged in
+2025-10-29 13:48:48,376 - hr - Viewed supervisor dashboard
+2025-10-29 13:48:53,625 - hr - Viewed info for employee 7
+2025-10-29 13:48:56,474 - hr - Viewed supervisor dashboard
+2025-10-29 13:49:01,132 - hr - Viewed supervisor dashboard
+2025-10-29 13:49:07,710 - hr - Viewed supervisor dashboard
+2025-10-29 13:49:12,618 - hr - Logged out
+2025-10-29 13:49:21,705 - anonymous - Failed login attempt for vikas2
+2025-10-29 13:49:29,409 - vikas2 - Logged in
+2025-10-29 13:49:33,775 - vikas2 - Viewed attendance
+2025-10-29 13:49:54,858 - vikas2 - Viewed leave balances
+2025-10-29 13:50:05,166 - vikas2 - Viewed salary slips
+2025-10-29 13:50:10,707 - vikas2 - Viewed documents
+2025-10-29 13:50:15,220 - vikas2 - Viewed holidays
+2025-10-29 13:50:20,721 - vikas2 - Viewed profile
+2025-10-29 13:50:33,723 - vikas2 - Logged out
+2025-10-29 14:31:47,197 - admin - Logged in
+2025-10-29 14:31:47,257 - admin - Viewed admin dashboard
+2025-10-29 14:32:02,008 - admin - Viewed admin dashboard
+2025-10-29 14:32:08,980 - admin - Viewed admin dashboard
+2025-10-29 14:32:11,092 - admin - Logged out
+2025-10-29 14:32:31,566 - vikas2 - Logged in
+2025-10-29 14:36:34,027 - vikas2 - Logged in
+2025-10-29 14:36:57,386 - vikas2 - Viewed salary slips
+2025-10-29 14:37:04,807 - vikas2 - Viewed profile
+2025-10-29 14:37:20,820 - vikas2 - Viewed leave balances
+2025-10-29 14:37:31,747 - vikas2 - Logged out
+2025-10-29 14:37:42,855 - hr - Logged in
+2025-10-29 14:37:42,898 - hr - Viewed supervisor dashboard
+2025-10-29 15:28:33,633 - admin - Logged in
+2025-10-29 15:28:33,701 - admin - Viewed admin dashboard
+2025-10-29 15:28:40,564 - admin - Viewed admin dashboard
+2025-10-29 15:28:43,065 - admin - Logged out
+2025-10-29 15:28:54,693 - hr - Logged in
+2025-10-29 15:28:54,779 - hr - Viewed supervisor dashboard
+2025-10-29 15:29:27,140 - hr - Viewed supervisor dashboard
+2025-10-29 15:29:28,223 - hr - Viewed supervisor dashboard
+2025-10-29 15:29:44,321 - hr - Logged out
+2025-10-29 15:29:57,993 - vikas2 - Logged in
+2025-10-29 15:29:58,061 - vikas2 - Viewed employee dashboard
+2025-10-29 15:30:07,024 - vikas2 - Viewed profile
+2025-10-29 15:30:11,025 - vikas2 - Viewed employee dashboard
+2025-10-29 15:30:14,033 - vikas2 - Viewed profile
+2025-10-29 15:30:20,775 - vikas2 - Viewed employee dashboard
+2025-10-29 15:30:42,333 - vikas2 - Viewed attendance
+2025-10-29 15:30:46,055 - vikas2 - Viewed employee dashboard
+2025-10-29 15:31:05,971 - vikas2 - Logged out
+2025-10-29 15:31:15,830 - hr - Logged in
+2025-10-29 15:31:15,885 - hr - Viewed supervisor dashboard
+2025-10-29 15:31:56,068 - hr - Viewed holidays
+2025-10-29 15:31:58,209 - hr - Viewed supervisor dashboard
+2025-10-29 15:32:07,239 - hr - Viewed supervisor dashboard
+2025-10-29 15:32:28,496 - hr - Viewed supervisor dashboard
+2025-10-29 15:52:50,934 - hr - Logged in
+2025-10-29 15:52:50,994 - hr - Viewed supervisor dashboard
+2025-10-29 15:53:23,632 - hr - Viewed holidays
+2025-10-29 15:53:25,579 - hr - Viewed supervisor dashboard
+2025-10-29 15:53:38,284 - hr - Logged out
+2025-10-29 15:53:49,909 - vikas2 - Logged in
+2025-10-29 15:53:49,956 - vikas2 - Viewed employee dashboard
+2025-10-29 15:54:15,105 - vikas2 - Applied for casual leave
+2025-10-29 15:54:18,533 - vikas2 - Viewed employee dashboard
+2025-10-29 15:54:24,212 - vikas2 - Viewed attendance
+2025-10-29 15:54:26,424 - vikas2 - Viewed employee dashboard
+2025-10-29 15:54:40,430 - vikas2 - Viewed attendance
+2025-10-29 15:54:44,564 - vikas2 - Viewed attendance
+2025-10-29 15:54:46,574 - vikas2 - Viewed employee dashboard
+2025-10-29 15:54:49,815 - vikas2 - Logged out
+2025-10-29 15:54:57,822 - hr - Logged in
+2025-10-29 15:54:57,875 - hr - Viewed supervisor dashboard
+2025-10-29 15:56:29,016 - hr - Logged in
+2025-10-29 15:56:29,100 - hr - Viewed supervisor dashboard
+2025-10-29 15:57:00,571 - hr - Updated leave 1 status to approved for employee 7
+2025-10-29 15:57:06,039 - hr - Updated leave 1 status to approved for employee 7
+2025-10-29 15:57:15,594 - hr - Updated leave 1 status to rejected for employee 7
+2025-10-29 15:57:19,840 - hr - Updated leave 1 status to approved for employee 7
+2025-10-29 15:57:23,841 - hr - Viewed supervisor dashboard
+2025-10-29 15:58:03,104 - hr - Logged out
+2025-10-29 15:58:19,217 - vikas2 - Logged in
+2025-10-29 15:58:19,283 - vikas2 - Viewed employee dashboard
+2025-10-29 15:58:36,356 - vikas2 - Viewed holidays
+2025-10-29 15:58:38,933 - vikas2 - Viewed employee dashboard
+2025-10-29 15:58:42,537 - vikas2 - Viewed leave balances
+2025-10-29 15:58:46,171 - vikas2 - Viewed employee dashboard
+2025-10-29 15:59:05,639 - vikas2 - Viewed leave balances
+2025-10-29 15:59:10,226 - vikas2 - Viewed employee dashboard
+2025-10-29 15:59:14,820 - vikas2 - Viewed attendance
+2025-10-29 15:59:18,444 - vikas2 - Viewed employee dashboard
+2025-10-29 15:59:26,804 - vikas2 - Logged out
+2025-10-29 15:59:38,665 - admin - Logged in
+2025-10-29 15:59:38,733 - admin - Viewed admin dashboard
+2025-10-29 16:05:04,728 - admin - Logged in
+2025-10-29 16:05:04,794 - admin - Viewed admin dashboard
+2025-10-29 16:16:11,175 - admin - Logged in
+2025-10-29 16:16:11,270 - admin - Viewed admin dashboard
+2025-10-29 16:16:52,817 - admin - Viewed admin dashboard
+2025-10-29 16:17:53,844 - admin - Viewed admin dashboard
+2025-10-29 16:17:59,952 - admin - Viewed admin dashboard
+2025-10-29 16:19:46,807 - admin - Added holiday sunday
+2025-10-29 16:19:57,227 - admin - Viewed admin dashboard
+2025-10-29 16:21:20,362 - admin - Viewed admin dashboard

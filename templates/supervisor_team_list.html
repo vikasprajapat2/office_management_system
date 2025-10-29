@@ -1,0 +1,109 @@
+<!-- templates/supervisor_team_list.html - Manager Team Overview -->
+{% extends "base_dashboard.html" %}
+{% set title = "Team Management" %}
+{% set active = "employees" %}
+
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <h2>My Team Management</h2>
+        <p class="text-muted">Complete overview and controls for your team members.</p>
+    </div>
+</div>
+
+<!-- Team KPI Cards -->
+<div class="row mt-4 mb-4">
+    {% from "partials/metric_card.html" import metric_card %}
+    {{ metric_card('Team Members', team_stats|length, 'fa-users', 'primary', '#') }}
+    {{ metric_card('Pending Tasks', team_tasks_pending, 'fa-tasks', 'warning', '#') }}
+    {{ metric_card('Overdue Tasks', overdue_tasks, 'fa-exclamation-triangle', 'danger', '#') }}
+    {{ metric_card('Today Present', team_stats|selectattr('today_attendance')|list|length, 'fa-user-check', 'success', '#') }}
+</div>
+
+<!-- Team List Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between">
+                <h6 class="m-0 font-weight-bold">Team Members</h6>
+                <a href="{{ url_for('assign_task', emp_id=0) }}" class="btn btn-light btn-sm">+ Assign Task</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Designation</th>
+                                <th>Today</th>
+                                <th>Pending Leaves</th>
+                                <th>Tasks</th>
+                                <th>Progress</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in team_stats %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ stat.employee.profile_picture or url_for('static', filename='img/avatar.png') }}" 
+                                             class="rounded-circle mr-2" width="40" height="40">
+                                        <div>
+                                            <strong>{{ stat.employee.full_name }}</strong><br>
+                                            <small class="text-muted">{{ stat.employee.emp_number }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ stat.employee.designation }}</td>
+                                <td>
+                                    {% if stat.today_attendance %}
+                                        <span class="badge badge-success">Present</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Absent</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-warning">{{ stat.pending_leaves }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-info">{{ stat.tasks_pending }}</span>
+                                    {% if stat.tasks_overdue %}
+                                        <span class="badge badge-danger ml-1">{{ stat.tasks_overdue }} Overdue</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 20px; width: 100px;">
+                                        <div class="progress-bar" style="width: 75%"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ url_for('supervisor_employee_info', emp_id=stat.employee.id) }}" 
+                                           class="btn btn-outline-primary" title="View Profile">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('supervisor_employee_tasks', emp_id=stat.employee.id) }}" 
+                                           class="btn btn-outline-info" title="Tasks">
+                                            <i class="fas fa-tasks"></i>
+                                        </a>
+                                        <a href="{{ url_for('supervisor_update_employee', emp_id=stat.employee.id) }}" 
+                                           class="btn btn-outline-warning" title="Update">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('assign_task', emp_id=stat.employee.id) }}" 
+                                           class="btn btn-outline-success" title="Assign Task">
+                                            <i class="fas fa-plus"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

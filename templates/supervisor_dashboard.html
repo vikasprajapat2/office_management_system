@@ -1,16 +1,191 @@
-{% extends 'base.html' %}
-{% block title %}Supervisor Dashboard{% endblock %}
-{% block content %}
-    <h2>Supervisor Dashboard</h2>
-    <h4>Assigned Employees</h4>
-    <ul class="list-group">
-        {% for emp in assigned %}
-            <li class="list-group-item">
-                {{ emp.full_name }} ({{ emp.department }}, {{ emp.emp_number }}) 
-                - <a href="{{ url_for('supervisor_employee_info', emp_id=emp.id) }}">Info</a>
-                - <a href="{{ url_for('supervisor_employee_attendance', emp_id=emp.id) }}">Attendance</a>
-                - <a href="{{ url_for('supervisor_employee_leaves', emp_id=emp.id) }}">Leaves</a>
-            </li>
-        {% endfor %}
-    </ul>
+{% extends "base_dashboard.html" %}
+{% set active = "dashboard" %}
+
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-3">Welcome, {{ current_user.full_name }} - Manager</h2>
+        <p class="text-muted">Comprehensive team insights and controls.</p>
+    </div>
+</div>
+
+<!-- KPI Cards Row -->
+<div class="row mt-4">
+    {% from "partials/metric_card.html" import metric_card %}
+    {{ metric_card('Team Size', assigned|length|default(0), 'fa-users-cog', 'primary', '#') }}
+    {{ metric_card('Pending Leaves', pending_my_leaves|default(0), 'fa-clipboard-list', 'warning', '#') }}
+    {{ metric_card('Present Today', team_attendance_today|default(0), 'fa-user-check', 'success', '#') }}
+    {{ metric_card('Team Overtime', team_overtime|default(0)|round(1), 'fa-hourglass-half', 'info', '#') }}
+    {{ metric_card('Absent Today', team_absent_today|default(0), 'fa-user-times', 'danger', '#') }}
+    {{ metric_card('Avg Progress', (team_progress_avg|default(0)|round(1)|string) ~ '%', 'fa-chart-line', 'secondary', '#') }}
+    {{ metric_card('Pending Tasks', team_tasks_pending, 'fa-tasks', 'warning', url_for('supervisor_team_list')) }}
+    {{ metric_card('Overdue Tasks', overdue_tasks, 'fa-exclamation-triangle', 'danger', url_for('supervisor_team_list')) }}
+    {{ metric_card('Completed Tasks', team_tasks_completed, 'fa-check-circle', 'success', '#') }}
+</div>
+
+<!-- Graphical Reports Row -->
+<div class="row mt-4">
+    <!-- Attendance Chart Card -->
+    <div class="col-xl-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header bg-primary text-white">
+                <h6 class="m-0 font-weight-bold">Monthly Attendance Trend</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="attendanceChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Bar for Team Goals -->
+    <div class="col-xl-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header bg-success text-white">
+                <h6 class="m-0 font-weight-bold">Team Goal Progress</h6>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ team_progress_avg|default(0) }}%" aria-valuenow="{{ team_progress_avg|default(0) }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ team_progress_avg|default(0) }}%
+                    </div>
+                </div>
+                <div class="row">
+                    {% if assigned %}
+                        {% for emp in assigned[:5] %}
+                        <div class="col-6 mb-2">
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                                    {{ emp.full_name[:8] }}: 75%
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12">
+                            <p class="text-center text-muted">No team members assigned</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leave Approvals Table -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-white">
+                <h6 class="m-0 font-weight-bold">Pending Leave Approvals</h6>
+            </div>
+            <div class="card-body">
+                {% if team_pending_leaves and team_pending_leaves|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Type</th>
+                                <th>Dates</th>
+                                <th>Reason</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in team_pending_leaves %}
+                            <tr>
+                                <td>{{ leave.user.full_name }}</td>
+                                <td>{{ leave.leave_type.title() }}</td>
+                                <td>{{ leave.start_date }} to {{ leave.end_date }}</td>
+                                <td>{{ leave.reason[:30] if leave.reason else 'N/A' }}...</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('supervisor_employee_leaves', emp_id=leave.user_id) }}" style="display: inline;" class="mr-2">
+                                        <input type="hidden" name="leave_id" value="{{ leave.id }}">
+                                        <button type="submit" name="status" value="approved" class="btn btn-sm btn-success">Approve</button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('supervisor_employee_leaves', emp_id=leave.user_id) }}" style="display: inline;">
+                                        <input type="hidden" name="leave_id" value="{{ leave.id }}">
+                                        <button type="submit" name="status" value="rejected" class="btn btn-sm btn-danger">Reject</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center text-muted">No pending approvals.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team Performance Report -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h6 class="m-0 font-weight-bold">Team Performance Report</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        {% set attendance_rate = (team_attendance_today / assigned|length * 100)|round(1) if assigned and assigned|length > 0 else 0 %}
+                        <h6>Attendance Rate: {{ attendance_rate }}%</h6>
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-info" style="width: {{ attendance_rate }}%"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        {% set leave_util = (team_approved_leaves / assigned|length)|round(1) if assigned and assigned|length > 0 else 0 %}
+                        <h6>Leave Utilization: {{ leave_util }} avg</h6>
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-warning" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Overtime Avg: {{ avg_team_overtime|default(0)|round(1) }} hrs</h6>
+                        <div class="progress mb-3">
+                            {% set overtime_width = [avg_team_overtime|default(0) * 10, 100]|min %}
+                            <div class="progress-bar bg-danger" style="width: {{ overtime_width }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+            datasets: [{
+                label: 'Attendance Days',
+                data: {{ attendance_monthly|default([0,0,0,0,0])|tojson }},
+                borderColor: '#4e73df',
+                backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+</script>
 {% endblock %}
+
+<!-- Add Team List link -->
+<div class="row mt-4">
+    <div class="col-12">
+        <a href="{{ url_for('supervisor_team_list') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-users-cog mr-2"></i>View Full Team Management
+        </a>
+    </div>
+</div>

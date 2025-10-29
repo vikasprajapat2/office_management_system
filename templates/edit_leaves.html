@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Edit Leaves{% endblock %}
+{% block content %}
+    <h2>Leaves for {{ emp.full_name }}</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leave in leaves %}
+                <tr>
+                    <td>{{ leave.leave_type.capitalize() }}</td>
+                    <td>{{ leave.start_date }}</td>
+                    <td>{{ leave.end_date }}</td>
+                    <td>{{ leave.status.capitalize() }}</td>
+                    <td>
+                        <form method="POST" class="form-inline">
+                            <input type="hidden" name="leave_id" value="{{ leave.id }}">
+                            <select class="form-control mr-1" name="status">
+                                <option value="pending" {% if leave.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="approved" {% if leave.status == 'approved' %}selected{% endif %}>Approved</option>
+                                <option value="rejected" {% if leave.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('supervisor_dashboard') }}" class="btn btn-secondary">Back</a>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Employee Info{% endblock %}
+{% block content %}
+    <h2>{{ emp.full_name }} Info</h2>
+    <dl class="row">
+        <!-- Similar to employee_profile, add extra fields like salary, comment, last_working_day -->
+        <dt class="col-sm-3">Salary</dt>
+        <dd class="col-sm-9">{{ emp.salary }}</dd>
+        <dt class="col-sm-3">Comment</dt>
+        <dd class="col-sm-9">{{ emp.comment }}</dd>
+        <dt class="col-sm-3">Last Working Day</dt>
+        <dd class="col-sm-9">{{ emp.last_working_day or 'N/A' }}</dd>
+        <!-- Add edit form if needed -->
+    </dl>
+    <a href="{{ url_for('supervisor_dashboard') }}" class="btn btn-secondary">Back</a>
+{% endblock %}

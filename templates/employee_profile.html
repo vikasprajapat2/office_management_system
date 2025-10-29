@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+    <h2>My Profile</h2>
+    {% if user.profile_picture %}
+        <img src="{{ user.profile_picture }}" alt="Profile Picture" class="profile-pic mb-3">
+    {% endif %}
+    <dl class="row">
+        <dt class="col-sm-3">Full Name</dt>
+        <dd class="col-sm-9">{{ user.full_name }}</dd>
+        <dt class="col-sm-3">Designation</dt>
+        <dd class="col-sm-9">{{ user.designation }}</dd>
+        <dt class="col-sm-3">Probation Completed</dt>
+        <dd class="col-sm-9">{{ 'Yes' if user.probation_completed else 'No' }}</dd>
+        <dt class="col-sm-3">Employee Number</dt>
+        <dd class="col-sm-9">{{ user.emp_number }}</dd>
+        <dt class="col-sm-3">Date of Joining</dt>
+        <dd class="col-sm-9">{{ user.doj }}</dd>
+        <dt class="col-sm-3">Permanent Address</dt>
+        <dd class="col-sm-9">{{ user.perm_address }}</dd>
+        <dt class="col-sm-3">Current Address</dt>
+        <dd class="col-sm-9">{{ user.curr_address }}</dd>
+        <dt class="col-sm-3">Emergency Contact</dt>
+        <dd class="col-sm-9">{{ user.emerg_contact_name }} - {{ user.emerg_contact_num }}</dd>
+        <dt class="col-sm-3">Birth Date</dt>
+        <dd class="col-sm-9">{{ user.birth_date }}</dd>
+        <dt class="col-sm-3">PAN</dt>
+        <dd class="col-sm-9">{{ user.pan }}</dd>
+        <dt class="col-sm-3">Aadhar</dt>
+        <dd class="col-sm-9">{{ user.aadhar }}</dd>
+    </dl>
+    <a href="{{ url_for('employee_dashboard') }}" class="btn btn-secondary">Back</a>
+{% endblock %}

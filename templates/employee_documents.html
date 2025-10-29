@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Documents{% endblock %}
+{% block content %}
+    <h2>Documents</h2>
+    <ul class="list-group">
+        {% for doc in docs %}
+            <li class="list-group-item">
+                {{ doc.name }} - <a href="{{ url_for('download_document', doc_id=doc.id) }}">Download</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('employee_dashboard') }}" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}

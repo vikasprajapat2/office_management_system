@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Edit Attendance{% endblock %}
+{% block content %}
+    <h2>Attendance for {{ emp.full_name }}</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>OT (hrs)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for att in attendances %}
+                <tr>
+                    <td>{{ att.date }}</td>
+                    <td>
+                        <form method="POST" class="form-inline">
+                            <input type="hidden" name="att_id" value="{{ att.id }}">
+                            <input type="time" class="form-control mr-1" name="in_time" value="{{ att.in_time.strftime('%H:%M') if att.in_time else '' }}" required>
+                    </td>
+                    <td>
+                            <input type="time" class="form-control mr-1" name="out_time" value="{{ att.out_time.strftime('%H:%M') if att.out_time else '' }}" required>
+                    </td>
+                    <td>
+                            <input type="number" class="form-control mr-1" name="ot" value="{{ att.overtime }}" step="0.1" required>
+                    </td>
+                    <td>
+                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h4>Add New Attendance</h4>
+    <form method="POST">
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="date">Date</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="in_time">In Time</label>
+                <input type="time" class="form-control" id="in_time" name="in_time" required>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="out_time">Out Time</label>
+                <input type="time" class="form-control" id="out_time" name="out_time" required>
+            </div>
+            <div class="form-group col-md-2">
+                <label for="ot">OT (hrs)</label>
+                <input type="number" class="form-control" id="ot" name="ot" step="0.1" value="0.0" required>
+            </div>
+            <div class="form-group col-md-1">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary btn-block">Add</button>
+            </div>
+        </div>
+    </form>
+    <a href="{{ url_for('supervisor_dashboard') }}" class="btn btn-secondary">Back</a>
+{% endblock %}

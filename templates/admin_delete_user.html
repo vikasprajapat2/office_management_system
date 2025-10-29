@@ -1,0 +1,33 @@
+<!-- templates/admin_delete_user.html -->
+{% extends 'base.html' %}
+{% block title %}Delete User{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-6 offset-md-3 col-animated">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white text-center">
+                    <h4><i class="fas fa-exclamation-triangle mr-2"></i>Confirm Delete</h4>
+                </div>
+                <div class="card-body text-center">
+                    <p class="lead">Are you sure you want to <strong>permanently delete</strong> this user?</p>
+                    <div class="alert alert-warning">
+                        <strong>{{ user.full_name }}</strong> ({{ user.username }})<br>
+                        Role: <span class="badge badge-info">{{ user.role.capitalize() }}</span><br>
+                        Employee ID: {{ user.emp_number or 'N/A' }}
+                    </div>
+                    <p class="text-danger"><i class="fas fa-skull-crossbones"></i> This action <strong>cannot be undone</strong>!</p>
+                    <p>All attendance, leaves, documents, salary slips, and logs will be deleted.</p>
+                    
+                    <form method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-trash-alt mr-2"></i>Yes, Delete Forever
+                        </button>
+                    </form>
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-secondary btn-lg ml-3">
+                        <i class="fas fa-ban mr-2"></i>Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

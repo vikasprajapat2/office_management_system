@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Attendance{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12 col-animated">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-calendar-alt mr-2"></i>Attendance for {{ month }}/{{ year }}
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="form-inline mb-3">
+                        <div class="form-group mr-2">
+                            <label for="month" class="mr-1">Month:</label>
+                            <input type="number" class="form-control" id="month" name="month" value="{{ month }}" min="1" max="12">
+                        </div>
+                        <div class="form-group mr-2">
+                            <label for="year" class="mr-1">Year:</label>
+                            <input type="number" class="form-control" id="year" name="year" value="{{ year }}" min="2000">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </form>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>In Time</th>
+                                <th>Out Time</th>
+                                <th>Overtime (hrs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for att in attendances %}
+                                <tr>
+                                    <td>{{ att.date }}</td>
+                                    <td>{{ att.in_time }}</td>
+                                    <td>{{ att.out_time }}</td>
+                                    <td>{{ att.overtime }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <a href="{{ url_for('employee_dashboard') }}" class="btn btn-secondary">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

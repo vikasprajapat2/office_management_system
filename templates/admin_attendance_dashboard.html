@@ -1,0 +1,10 @@
+<!-- templates/admin_attendance_dashboard.html -->
+{% extends 'base.html' %}
+{% block title %}Attendance Dashboard{% endblock %}
+{% block content %}
+    <h2>Attendance Dashboard for {{ month }}/{{ year }}</h2>
+    <p>Total Attendances: {{ total_attendances }}</p>
+    <p>Total Overtime Hours: {{ total_overtime }}</p>
+    <!-- Add charts or more stats using matplotlib if needed, but static for now -->
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back</a>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Logs{% endblock %}
+{% block content %}
+    <h2>Logs for {{ date }}</h2>
+    <form method="POST" class="form-inline mb-3">
+        <div class="form-group mr-2">
+            <label for="date" class="mr-1">Select Date:</label>
+            <input type="date" class="form-control" id="date" name="date" value="{{ date }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp }}</td>
+                    <td>{{ log.user.username if log.user else 'Anonymous' }}</td>
+                    <td>{{ log.action }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back</a>
+{% endblock %}

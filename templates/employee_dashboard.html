@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Employee Dashboard{% endblock %}
+{% block content %}
+    <h2>Welcome, {{ current_user.full_name }}!</h2>
+    <div class="list-group mt-4">
+        <a href="{{ url_for('employee_attendance') }}" class="list-group-item list-group-item-action">View Attendance</a>
+        <a href="{{ url_for('apply_leave') }}" class="list-group-item list-group-item-action">Apply for Leave</a>
+        <a href="{{ url_for('employee_leave_balances') }}" class="list-group-item list-group-item-action">Leave Balances</a>
+        <a href="{{ url_for('employee_profile') }}" class="list-group-item list-group-item-action">My Profile</a>
+        <a href="{{ url_for('employee_salary_slips') }}" class="list-group-item list-group-item-action">Salary Slips</a>
+        <a href="{{ url_for('employee_documents') }}" class="list-group-item list-group-item-action">Documents</a>
+        <a href="{{ url_for('employee_holidays') }}" class="list-group-item list-group-item-action">Holiday List</a>
+    </div>
+{% endblock %}

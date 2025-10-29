@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Apply Leave{% endblock %}
+{% block content %}
+    <h2>Apply for Leave</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="leave_type">Leave Type</label>
+            <select class="form-control" id="leave_type" name="leave_type">
+                <option value="casual">Casual</option>
+                <option value="sick">Sick</option>
+                <option value="earned">Earned</option>
+                <option value="maternity">Maternity</option>
+                <option value="lop">Loss of Pay</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="start_date">Start Date</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" required>
+        </div>
+        <div class="form-group">
+            <label for="end_date">End Date</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" required>
+        </div>
+        <div class="form-group">
+            <label for="reason">Reason</label>
+            <textarea class="form-control" id="reason" name="reason" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="doctor_cert">Doctor Certificate (for sick >2 days)</label>
+            <input type="file" class="form-control" id="doctor_cert" name="doctor_cert">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Apply</button>
+    </form>
+    <a href="{{ url_for('employee_dashboard') }}" class="btn btn-secondary mt-2">Back</a>
+{% endblock %}

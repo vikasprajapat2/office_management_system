@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Supervisor Dashboard{% endblock %}
+{% block content %}
+    <h2>Supervisor Dashboard</h2>
+    <h4>Assigned Employees</h4>
+    <ul class="list-group">
+        {% for emp in assigned %}
+            <li class="list-group-item">
+                {{ emp.full_name }} ({{ emp.department }}, {{ emp.emp_number }}) 
+                - <a href="{{ url_for('supervisor_employee_info', emp_id=emp.id) }}">Info</a>
+                - <a href="{{ url_for('supervisor_employee_attendance', emp_id=emp.id) }}">Attendance</a>
+                - <a href="{{ url_for('supervisor_employee_leaves', emp_id=emp.id) }}">Leaves</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

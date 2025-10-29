@@ -11,18 +11,22 @@ from datetime import date
 from sqlalchemy import func
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key_here'  # Change to a secure random key
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///office_management.db'  # Using SQLite for now
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_secret_key_here')  # Change to a secure random key
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/office_management.db'  # Using /tmp for serverless
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['LOG_FOLDER'] = 'logs'
+app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
+app.config['LOG_FOLDER'] = '/tmp/logs'
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-os.makedirs(app.config['LOG_FOLDER'], exist_ok=True)
+# Create directories only if they don't exist (serverless-friendly)
+try:
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    os.makedirs(app.config['LOG_FOLDER'], exist_ok=True)
+except:
+    pass  # Ignore errors in serverless environment
 
 # Daily Logger
 def get_daily_logger():

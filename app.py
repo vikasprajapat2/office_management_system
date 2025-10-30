@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime, date, timedelta
 import os
+import sys
 import logging
 from sqlalchemy import func, extract
 from datetime import date
@@ -20,8 +21,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'mysql+pymysql://root:1234@localhost:3306/office_management'
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['LOG_FOLDER'] = 'logs'
+app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', '/tmp/uploads')
+app.config['LOG_FOLDER'] = os.environ.get('LOG_FOLDER', '/tmp/logs')
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
@@ -41,7 +42,11 @@ def get_daily_logger():
     logger = logging.getLogger('daily_logger')
     logger.setLevel(logging.INFO)
     if not logger.handlers:
-        handler = logging.FileHandler(log_file)
+        try:
+            handler = logging.FileHandler(log_file)
+        except Exception:
+            # Fallback to stdout if file writing is not permitted (e.g., serverless)
+            handler = logging.StreamHandler(sys.stdout)
         formatter = logging.Formatter('%(asctime)s - %(user)s - %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)

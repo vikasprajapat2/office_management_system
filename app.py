@@ -11,7 +11,7 @@ from sqlalchemy import func, extract
 from datetime import date
 from sqlalchemy import func
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_secret_key_here')  # Change to a secure random key
 
 # MySQL Configuration

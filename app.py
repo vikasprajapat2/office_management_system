@@ -849,7 +849,14 @@ def supervisor_update_employee(emp_id):
     
     return render_template('update_employee.html', employee=emp)
 
-if __name__ == '__main__':
-    with app.app_context():
+# Initialize database tables
+with app.app_context():
+    try:
         db.create_all()
-    app.run(debug=True)
+        print("Database tables created successfully!")
+    except Exception as e:
+        print(f"Error creating tables: {e}")
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

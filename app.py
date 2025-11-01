@@ -14,12 +14,18 @@ from sqlalchemy import func
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_secret_key_here')  # Change to a secure random key
 
-# MySQL Configuration
-# Format: mysql+pymysql://username:password@host:port/database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL',
-    'mysql+pymysql://root:1234@localhost:3306/office_management'
-)
+# Database Configuration for Railway
+# Railway provides DATABASE_URL (PostgreSQL)
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    # Railway uses postgres:// but SQLAlchemy needs postgresql://
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    # Local fallback (MySQL)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@localhost:3306/office_management'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', '/tmp/uploads')
 app.config['LOG_FOLDER'] = os.environ.get('LOG_FOLDER', '/tmp/logs')
